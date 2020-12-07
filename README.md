@@ -24,8 +24,6 @@ nutrition and demographic factors are most important for adults who report to ha
 The 2015-2018 demographic, nutrient intake and weight history data are obtained from 
 [NHANES](https://wwwn.cdc.gov/Nchs/Nhanes/)
 
-['SEQN', 'DR1DRSTZ', 'DR1TKCAL', 'DR1TPROT', 'DR1TCARB', 'DR1TSUGR', 'DR1TFIBE', 
-'DR1TTFAT', 'DR1TSFAT', 'DR1TMFAT', 'DR1TPFAT', 'DR1TCHOL']
 
 Key variables: 
 
@@ -34,11 +32,21 @@ Key variables:
 | SEQN |  Respondent sequence number |
 | WHD020 |  Current self-reported weight (pounds) |
 | WHD110 | Self-reported weight-10 yrs ago (pounds) |
-| RIAGENDR - Gender
-| RIDAGEYR - Age in years at screening
-| RIDRETH1 - Race/Hispanic origin
-| DMDEDUC2 - Education level - Adults 20+
-| INDHHIN2 - Annual household income
+| RIAGENDR | Gender |
+| RIDAGEYR | Age in years at screening |
+| RIDRETH1 | Race/Hispanic origin |
+| DMDEDUC2 | Education level - Adults 20+ |
+| INDHHIN2 | Annual household income |
+| DR1TKCAL | Energy (kcal) |
+| DR1TPROT | Protein (gm) |
+| DR1TCARB | Carbohydrate (gm) |
+| DR1TSUGR | Total sugars (gm) |
+| DR1TFIBE | Dietary fiber (gm) |
+| DR1TTFAT | Total fat (gm) |
+| DR1TSFAT | Total saturated fatty acids (gm) |
+| DR1TMFAT | Total monounsaturated fatty acids (gm) |
+| DR1TPFAT | Total polyunsaturated fatty acids (gm) |
+| DR1TCHOL | Cholesterol (mg) |
 
 
 ## Core examples

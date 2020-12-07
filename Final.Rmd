@@ -1,0 +1,74 @@
+---
+title: "STATS 506 Final Project"
+author: "Yingyi Yang"
+date: "`r format.Date(Sys.Date(), '%B %d, %Y')`"
+output: 
+  html_document:
+    toc: true
+---
+
+```{r setup, include=FALSE}
+# 79: -------------------------------------------------------------------------
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# **Introduction**
+
+The majority of adults in the United States gain weight with age. Investigation on 
+weight maintenance has long been the health concern of people to prevent obesity 
+and the possible complications because of the obese state. 
+
+People's weight is controlled by both internal and external factors. Nutrient intake 
+can no doubtedly affect weight. Demographic factors (such as age, gender, ethnic groups)
+and socioeconomic factors  (such as education level and income) may affect adults' 
+weight as well. It thus makes sense to identify the key factors among them to provide 
+people with guidence to maintain their weight. 
+
+
+# **Data/Methods** 
+
+The 2015-2018 demographic, nutrient intake and weight history data are obtained from 
+[NHANES](https://wwwn.cdc.gov/Nchs/Nhanes/). We select some of the variables that are 
+of most interest. The response variable are transformed into binary according to whether 
+the respondent's weight are at least 5 pounds less than 10 years ago. 
+
+We use function `featureSelection` to select the `n` most important features. The criteria 
+for feature selection is set by the input argument `method`. Here we use two classification 
+models: logistic regression and decision tree. We select features based on model and 
+recursive feature elimination (RFE) respectively.
+
+The detailed code can be founded in [github](https://github.com/YingyiYang/Stats506Final).
+
+
+# **Results** 
+
+We present results for four different types of feature selections below. 6 features are 
+selected for each.
+
+### 1. model-based, logistic regression 
+
+![](https://github.com/YingyiYang/Stats506Final/blob/main/results/Model_LR.png?raw=true){width=400px}
+
+### 2. model-based, decision tree
+
+![](https://github.com/YingyiYang/Stats506Final/blob/main/results/Model_tree.png?raw=true){width=400px}
+
+### 3. recursive feature elimination, logistic regression 
+
+Top 6 features are: 'RIDAGEYR', 'DMDEDUC2', 'DR1TTFAT', 'DR1TMFAT', 'DR1TPFAT', 'Female'.
+
+### 4. recursive feature elimination, decision tree 
+
+Top 6 features are: 'DR1TKCAL', 'DR1TFIBE', 'DR1TSFAT', 'DR1TMFAT', 'DR1TPFAT', 'DR1TCHOL'.
+
+# **Conclusion/Discussion** 
+
+From the above results, we can say that some common important factors are 'DR1TPFAT' 
+(Total polyunsaturated fatty acids), 'DR1TMFAT' (Total monounsaturated fatty acids), 
+'DR1TFIBE' (Dietary fiber), 'RIDAGEYR' (Age in years at screening) and 'DMDEDUC2' 
+(Education level). The results are not conclusive because the feature importance for the 
+same model also varies when we use different criteria. Further work such as cross-validation 
+is needed to verify the results.
+
+
+
