@@ -4,71 +4,148 @@ author: "Yingyi Yang"
 date: "`r format.Date(Sys.Date(), '%B %d, %Y')`"
 output: 
   html_document:
-    toc: true
+    toc: yes
+    toc_float: yes
+    df_print: paged
+    theme: readable
 ---
 
 ```{r setup, include=FALSE}
 # 79: -------------------------------------------------------------------------
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = FALSE)
+library(tidyverse)
+library(ggplot2)
+library(gridExtra)
 ```
 
 # **Introduction**
 
-The majority of adults in the United States gain weight with age. Investigation on 
-weight maintenance has long been the health concern of people to prevent obesity 
-and the possible complications because of the obese state. 
+The majority of adults in the United States gain weight with age. Investigation 
+on weight maintenance has long been the health concern of people to prevent 
+obesity and the possible complications because of the obese state. 
 
-People's weight is controlled by both internal and external factors. Nutrient intake 
-can no doubtedly affect weight. Demographic factors (such as age, gender, ethnic groups)
+People's weight is controlled by both internal and external factors. Nutrient 
+intake can no doubtedly affect weight. Demographic factors (such as age, gender) 
 and socioeconomic factors  (such as education level and income) may affect adults' 
-weight as well. It thus makes sense to identify the key factors among them to provide 
-people with guidence to maintain their weight. 
+weight as well. It thus makes sense to identify the key factors among them to 
+provide people with guidence to maintain their weight. In this analysis, we would 
+like to investigate that: For adults who weigh less than they were 10 years ago, 
+what their current nutrient intake and demographic factors are considered 
+important? 
 
 
 # **Data/Methods** 
 
-The 2015-2018 demographic, nutrient intake and weight history data are obtained from 
-[NHANES](https://wwwn.cdc.gov/Nchs/Nhanes/). We select some of the variables that are 
-of most interest. The response variable are transformed into binary according to whether 
-the respondent's weight are at least 5 pounds less than 10 years ago. 
+The 2015-2018 demographic, nutrient intake and weight history data are obtained 
+from [NHANES](https://wwwn.cdc.gov/Nchs/Nhanes/). We select some of the variables 
+that are of most interest. The response variable are transformed into binary 
+according to whether the respondent's weight are at least 5 pounds less than 
+10 years ago. Other covariates are standardized before model fitting.
 
-We use function `featureSelection` to select the `n` most important features. The criteria 
-for feature selection is set by the input argument `method`. Here we use two classification 
-models: logistic regression and decision tree. We select features based on model and 
-recursive feature elimination (RFE) respectively.
+We use function `featureSelection` to select the `n` most important features. 
+The criteria for feature selection is set by the input argument `method`. Here 
+we use two classification models: logistic regression and decision tree. We 
+select features based on model and recursive feature elimination (RFE) method 
+for each model, respectively. RFE is implemented using `feature_selection` in 
+Python `sklearn` package. It can select features by recursively 
+considering smaller set of features. Basically, it trains an estimator on the initial 
+set of features, and prunes the least important feature either through a `coef_` or 
+`feature_importances_` attribute. This procedure is repeated until the desired 
+number of features is reached.
 
 The detailed code can be founded in [github](https://github.com/YingyiYang/Stats506Final).
 
 
 # **Results** 
 
-We present results for four different types of feature selections below. 6 features are 
-selected for each.
+We present results for two different methods of feature selections below. 5 
+features are selected for each case.
 
-### 1. model-based, logistic regression 
+### 1. Model-based method 
 
-![](https://github.com/YingyiYang/Stats506Final/blob/main/results/Model_LR.png?raw=true){width=400px}
+The results for logistic regression is quantified using the fitted coefficients 
+that are statistically significant. Features with largest absolute 
+coefficients are selected. Here we only have 4 significant features. On the 
+other hand, the results for classification tree is quantified using feature 
+importance.
 
-### 2. model-based, decision tree
+```{r data1}
+modelLR = read.csv('results/Model_LR.csv')
+modelTree = read.csv('results/Model_tree.csv')
 
-![](https://github.com/YingyiYang/Stats506Final/blob/main/results/Model_tree.png?raw=true){width=400px}
+modelLR = modelLR %>% 
+  mutate(`Feature coefficients` = sprintf('%0.04f', Feature.coeffs)) %>%
+  select(`Feature name`=Feature.name, `Feature coefficients`)
 
-### 3. recursive feature elimination, logistic regression 
+modelTree = modelTree %>% 
+  mutate(`Feature importance` = sprintf('%0.04f', Feature.importance)) %>%
+  select(`Feature name`=Feature.name, `Feature importance`)
+```
 
-Top 6 features are: 'RIDAGEYR', 'DMDEDUC2', 'DR1TTFAT', 'DR1TMFAT', 'DR1TPFAT', 'Female'.
+```{r figure1, fig.cap=cap, fig.width=13}
+p1 <- ggplot(modelLR, aes(x=`Feature name`, y=`Feature coefficients`)) + 
+  geom_bar(stat="identity", fill="steelblue")+
+  geom_text(aes(label=`Feature coefficients`), vjust=2, color="white", size=5)+
+  theme_minimal()
 
-### 4. recursive feature elimination, decision tree 
+p2 <- ggplot(modelTree, aes(x=`Feature name`, y=`Feature importance`)) + 
+  geom_bar(stat="identity", fill="steelblue")+
+  geom_text(aes(label=`Feature importance`), vjust=2, color="white", size=5)+
+  theme_minimal()
 
-Top 6 features are: 'DR1TKCAL', 'DR1TFIBE', 'DR1TSFAT', 'DR1TMFAT', 'DR1TPFAT', 'DR1TCHOL'.
+grid.arrange(grobs = list(p1, p2), ncol=2)
 
+cap = paste0(
+"**Figure 1.** Important features selected using model-based method ",
+"(left: Logistic Regression, right: Classification Tree)."
+)
+```
+
+### 2. Recursive feature elimination (RFE) method
+
+With `RFE` function in Python `sklearn.feature_selection` package, we can specify 
+the number of features that we want to keep, so that it can generate the top 5 
+important ones. 
+
+```{r data2}
+RFELR = read.csv('results/RFE_LR.csv')
+RFETree = read.csv('results/RFE_tree.csv')
+
+RFELR = RFELR %>% 
+  select(`Logistic Regression`=X0)
+
+RFETree = RFETree %>% 
+  select(`Classification Tree`=X0)
+```
+
+
+```{r table1, fig.cap=cap}
+RFE = cbind(RFELR, RFETree)
+
+cap = paste0(
+"**Table 1.** Important features selected using Recursive feature elimination ",
+"(RFE) method."
+)
+
+DT::datatable(RFE)
+```
 # **Conclusion/Discussion** 
 
-From the above results, we can say that some common important factors are 'DR1TPFAT' 
-(Total polyunsaturated fatty acids), 'DR1TMFAT' (Total monounsaturated fatty acids), 
-'DR1TFIBE' (Dietary fiber), 'RIDAGEYR' (Age in years at screening) and 'DMDEDUC2' 
-(Education level). The results are not conclusive because the feature importance for the 
-same model also varies when we use different criteria. Further work such as cross-validation 
-is needed to verify the results.
+We draw conclusions by comparing the results for the same classification model. 
+For logistic regression, the common important features for both model-based and 
+RFE methods are Age and Female. For classification tree, the common important 
+features when we use different methods are Protein and Saturated fatty acids. 
+We notice that only nutrient intake factors are important in the classification 
+tree model given that we have standardized the variables before model fitting. 
+Other important features that appear twice are Energy, Fiber and Monounsaturated 
+fatty acids. 
 
+Since the goal of this analysis is to identify the important features rather 
+than doing prediction, we will not study how these features can affect people's 
+weight loss. Another reason is that we only have data for people's most recent 
+nutrient intake, which certainly cannot represent what they have taken in the 
+past 10 years. Given that the question we want to answer focuses on people's 
+current status, we can conclude that the above features are the important ones 
+for those who have less weight than 10 years ago.
 
 
