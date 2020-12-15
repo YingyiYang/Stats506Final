@@ -1,14 +1,14 @@
 # Stats 506 F20 Final Project 
 
-For adults who weigh less than they were 10 years ago, what types of nutrient intake and what demographic variables play an important role?
+For adults who weigh less than they were 10 years ago, what their current nutrient intake and demographic factors are considered important? 
 
 
 ## Code organization
 
 - `Final.Rmd`,  `Final.html`: the write-up for this project 
 - `data`: 
- + `file_download.sh` : the shell script for downloading the required files 
- + `nhanes_files.txt`: the file names for the dataset on [NHANES](https://wwwn.cdc.gov/Nchs/Nhanes/)
+  + `file_download.sh` : the shell script for downloading the required files 
+  + `nhanes_files.txt`: the file names for the dataset on [NHANES](https://wwwn.cdc.gov/Nchs/Nhanes/)
  - `finalProj.ipynb`: source code written in jupyter notebook 
 
 
@@ -34,7 +34,6 @@ Key variables:
 | WHD110 | Self-reported weight-10 yrs ago (pounds) |
 | RIAGENDR | Gender |
 | RIDAGEYR | Age in years at screening |
-| RIDRETH1 | Race/Hispanic origin |
 | DMDEDUC2 | Education level - Adults 20+ |
 | INDHHIN2 | Annual household income |
 | DR1TKCAL | Energy (kcal) |
@@ -54,8 +53,4 @@ Key variables:
 We use weight loss or not as response variable to fit logistic regression and decision tree classification models. 
 Feature selection is implemented using `sklearn` package in Python, and is based on model and recursive feature elimination, respectively.
 
-## Todo
 
-- Feature selection based on RFECV
-- Multimodal regression based on different weight loss level 
-- Make nice table and figure 
