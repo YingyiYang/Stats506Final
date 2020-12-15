@@ -58,6 +58,26 @@ The detailed code can be founded in [github](https://github.com/YingyiYang/Stats
 
 # **Results** 
 
+The descriptive statistics for the variables used in this analysis are shown in 
+Table 1. There are 6,711 data points in which `Female` and `Wloss` are binary.
+
+```{r table1, fig.cap=cap}
+description = read.csv('results/description.csv')
+
+description = description %>% 
+  mutate(`Mean (range)`= sprintf('%0.02f (%0.02f ~ %0.02f)', mean, min, max),
+         `Standard deviation`= sprintf('%0.02f', std)) %>%
+  select(Variable=X, `Mean (range)`, `Standard deviation`)
+  
+cap = paste0(
+"**Table 1.** Descriptive statistics of the dataset including dependent variable ",
+"and independent variables."
+)
+
+DT::datatable(description)
+```
+
+
 We present results for two different methods of feature selections below. 5 
 features are selected for each case.
 
@@ -103,49 +123,34 @@ cap = paste0(
 
 ### 2. Recursive feature elimination (RFE) method
 
-With `RFE` function in Python `sklearn.feature_selection` package, we can specify 
-the number of features that we want to keep, so that it can generate the top 5 
-important ones. 
-
 ```{r data2}
 RFELR = read.csv('results/RFE_LR.csv')
 RFETree = read.csv('results/RFE_tree.csv')
-
-RFELR = RFELR %>% 
-  select(`Logistic Regression`=X0)
-
-RFETree = RFETree %>% 
-  select(`Classification Tree`=X0)
 ```
 
+With `RFE` function in Python `sklearn.feature_selection` package, we can specify 
+the number of features that we want to keep, so that it can generate the top 5 
+important ones. For logistic regression, the top 5 are `r RFELR$X0`. For 
+classification tree, the top 5 are `r RFETree$X0`.
 
-```{r table1, fig.cap=cap}
-RFE = cbind(RFELR, RFETree)
 
-cap = paste0(
-"**Table 1.** Important features selected using Recursive feature elimination ",
-"(RFE) method."
-)
 
-DT::datatable(RFE)
-```
 # **Conclusion/Discussion** 
 
 We draw conclusions by comparing the results for the same classification model. 
 For logistic regression, the common important features for both model-based and 
 RFE methods are Age and Female. For classification tree, the common important 
-features when we use different methods are Protein and Saturated fatty acids. 
+features when we use different methods are Carbohydrate, Cholesterol and Sugars. 
 We notice that only nutrient intake factors are important in the classification 
 tree model given that we have standardized the variables before model fitting. 
-Other important features that appear twice are Energy, Fiber and Monounsaturated 
-fatty acids. 
+Other important features that appear twice includes Monounsaturated fatty acids. 
 
 Since the goal of this analysis is to identify the important features rather 
-than doing prediction, we will not study how these features can affect people's 
-weight loss. Another reason is that we only have data for people's most recent 
-nutrient intake, which certainly cannot represent what they have taken in the 
-past 10 years. Given that the question we want to answer focuses on people's 
-current status, we can conclude that the above features are the important ones 
-for those who have less weight than 10 years ago.
+than doing prediction, we cannot infer how these features can affect people's 
+weight loss based above analysis. Another reason is that we only have data for 
+people's most recent nutrient intake, which certainly cannot represent what they 
+have taken in the past 10 years. Given that the question we want to answer focuses
+on people's current status, we can conclude that the above features are the 
+important ones for those who have less weight than 10 years ago.
 
 
